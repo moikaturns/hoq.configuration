@@ -41,6 +41,19 @@ var configGui = new function() {
 		},100);
 	}
 	return {
+		eraseAll:function() {
+			config.eraseAll();
+		},
+		shiftX:function(adjust) {
+			if(!config.shiftX(adjust)) {
+				reject($('table'));
+			}
+		},
+		shiftY:function(adjust) {
+			if(!config.shiftY(adjust)) {
+				reject($('table'));
+			}
+		},
 		width:function(adjust) {
 			if(!config.width(adjust)) {
 				reject($('table'));
@@ -96,10 +109,14 @@ var configGui = new function() {
 			}
 			$("table").html(html);
 			$("table td div").on("click",function(event) {
-				// add counter to model (if there are counters still available!)
+				// add counter to model (if there are counters still available and nothing in this space!)
 				var dragId = $(event.target).parent().attr("id");
+				if($(event.target).parent().hasClass("counter")||$(event.target).parent().hasClass("start")){
+					reject($(event.target).parent());
+					return;
+				}
 				var coords = getCoordsFromId(dragId);
-				var o = config.addThing(coords.x,coords.y,constants.constants.THING_COUNTER_CASHCARD);
+				var o = config.addThing(coords.x,coords.y,constant.THING_COUNTER_CASHCARD);
 				if(!o) {
 					reject($(event.target).parent());
 				}
@@ -160,8 +177,8 @@ var configGui = new function() {
 		},
 		drawThing:function(thing) {
 			var c = null;
-			if(thing.thingType.substring(0,1)=="C"){c="counter";}
-			if(thing.thingType.substring(0,1)=="E"){c="start";}
+			if(thing.thingType.substring(0,1)=="C"){c="counter";} // XXX refactor 'is one of these' into config.js
+			if(thing.thingType.substring(0,1)=="E"){c="start";} // XXX ditto
 			var id = "#x"+thing.x+"y"+thing.y;
 			$(id).addClass(c);
 			if("counterId" in thing) {

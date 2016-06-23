@@ -24,6 +24,51 @@ var config = new function() {
 	}
 
 	return {
+		eraseAll:function() {
+			// delete all counters - there should only be one start point
+			for(var j=0;j<(numberOfCounters+1);j++) {
+				for(var i=0;i<things.length;i++){
+					var thing = things[i];
+					if(thing.thingType.substring(0,1)=="C"){
+						things.splice(i,1);
+						break;
+					}
+				}
+			}
+			config.render();
+		},
+		shiftX:function(adjust) {
+			// if shifting left or right puts it over the edge... reject
+			for(var i=0;i<things.length;i++){
+				var thing = things[i];
+				if((thing.x==1&&adjust<0)||(thing.x==xSize&&adjust>0)) {
+					return false; // deny
+				}
+			}
+			// go ahead and adjust
+			for(var i=0;i<things.length;i++){
+				var thing = things[i];
+				thing.x = +thing.x +adjust;
+			}
+			config.render();
+			return true;
+		},
+		shiftY:function(adjust) {
+			// if shifting up or down puts it over the edge... reject
+			for(var i=0;i<things.length;i++){
+				var thing = things[i];
+				if((thing.y==1&&adjust<0)||(thing.y==ySize&&adjust>0)) {
+					return false; // deny
+				}
+			}
+			// go ahead and adjust
+			for(var i=0;i<things.length;i++){
+				var thing = things[i];
+				thing.y = +thing.y +adjust;
+			}
+			config.render();
+			return true;
+		},
 		height:function(adjust) {
 			// if reducing and anything is on top edge, reject
 			var go = function(){ySize+=adjust;config.render();};
@@ -90,17 +135,17 @@ var config = new function() {
 				// note that array position equates to counter number
 				// 1,1 is bottom left
 				things = [
-					{x:5,y:5,thingType:constants.THING_COUNTER_CASH,counterId:1},
-					{x:3,y:5,thingType:constants.THING_COUNTER_CASH,counterId:2},
-					{x:1,y:5,thingType:constants.constants.THING_COUNTER_CASHCARD,counterId:3},
-					{x:1,y:1,thingType:constants.constants.THING_COUNTER_CASHCARD,counterId:4},
-					{x:3,y:1,thingType:constants.constants.THING_COUNTER_CASHCARD,counterId:5},
-					{x:5,y:1,thingType:constants.constants.THING_COUNTER_CASHCARD,counterId:6},
-					{x:7,y:1,thingType:constants.constants.THING_COUNTER_CASHCARD,counterId:7},
-					{x:9,y:1,thingType:constants.constants.THING_COUNTER_CASHCARD,counterId:8},
-					{x:9,y:5,thingType:constants.constants.THING_COUNTER_CASHCARD,counterId:9},
-					{x:7,y:5,thingType:constants.constants.THING_COUNTER_CASHCARD,counterId:10},
-					{x:6,y:6,thingType:constants.THING_ENTRY_UP}
+					{x:5,y:5,thingType:constant.THING_COUNTER_CASH,counterId:1},
+					{x:3,y:5,thingType:constant.THING_COUNTER_CASH,counterId:2},
+					{x:1,y:5,thingType:constant.THING_COUNTER_CASHCARD,counterId:3},
+					{x:1,y:1,thingType:constant.THING_COUNTER_CASHCARD,counterId:4},
+					{x:3,y:1,thingType:constant.THING_COUNTER_CASHCARD,counterId:5},
+					{x:5,y:1,thingType:constant.THING_COUNTER_CASHCARD,counterId:6},
+					{x:7,y:1,thingType:constant.THING_COUNTER_CASHCARD,counterId:7},
+					{x:9,y:1,thingType:constant.THING_COUNTER_CASHCARD,counterId:8},
+					{x:9,y:5,thingType:constant.THING_COUNTER_CASHCARD,counterId:9},
+					{x:7,y:5,thingType:constant.THING_COUNTER_CASHCARD,counterId:10},
+					{x:6,y:6,thingType:constant.THING_ENTRY_UP}
 				];
 				messages = [
 					{uiLabel:"Tills are available",msgId:1,msgText:"Please take Tills are available"},
@@ -108,7 +153,7 @@ var config = new function() {
 					{uiLabel:"Card only",msgId:3,msgText:"Card payment only"},
 					{uiLabel:"Cash and card",msgId:4,msgText:"Cash/Card payment"}
 				];
-				orient = constants.constants.ORIENT_LANDSCAPE;
+				orient = constant.ORIENT_LANDSCAPE;
 				this.render();
 			} else {
 				// pull data from server
