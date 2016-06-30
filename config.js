@@ -1,11 +1,14 @@
 var config = new function() {
 
-	var numberOfCounters = null;
+	var numberOfCountersSolo = null; // how many are configured on solo
+	var numberOfCounters = null; // logical number (don't have to use all that solo has available)
 	var xSize = null;
 	var ySize = null;
 	var things = null;
 	var messages = null;
 	var orient = null;
+	
+	var soloArrayOffset = 0;
 
 	function thing(x,y,thingType) {
 		this.x = x;
@@ -160,6 +163,51 @@ var config = new function() {
 				alert("pull data from server not implemented yet");
 				// note - there should always be one entry point defined
 				// if one is not found then add one, remove a counter if necessary
+
+				// get number of physical workstations
+				$.get({
+					url: "/media/readArray.qsp?index="+(soloArrayOffset+1),
+					success: function(payload) {
+
+						numberOfCountersSolo = payload.split("|");
+						numberOfCountersSolo = numberOfCountersSolo[numberOfCountersSolo.length-1];
+					
+						// get global data
+						$.get({
+							url: "/media/readArray.qsp?index="+(soloArrayOffset+1),
+							success: function(payload) {
+								var parts = payload.split("|");
+								if(parts.length!=3){
+									// unexpected data - assume fresh unit so put in some sensible defaults
+								} else {
+								
+									// store size x / size y / num logical counters
+									
+									// now read in all entities
+									// IMPORTANT 
+									//	- may be a fresh system so defensive coding required
+									//	- first sign of things not as expected, plug in sensible defaults
+									//	- there may be no terminating XXX
+									//	- put in sensible defaults 
+									
+								}
+							}).fail(
+								alert("failed to read global data");
+							);
+						).fail(function(){
+							alert("failed to read physical workstation count");
+							// general failure - perhaps no network, don't plugin sensible defaults
+							//	put system beyond use and advise refresh
+						});
+					
+					}
+				}
+				).fail(function(){
+					alert("failed to read global data");
+					// general failure - perhaps no network, don't plugin sensible defaults
+					//	put system beyond use and advise refresh
+				});
+				
 			}
 		},
 		render:function() {
